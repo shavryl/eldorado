@@ -9,8 +9,6 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotInteractableException
 
 
-
-
 # driver should get the url
 def get_url(driver, url):
     driver.get(url)
@@ -29,4 +27,3 @@ def click_button(driver, xpath):
         print("No such element")
     except ElementNotInteractableException:
         print("Element not interactable")
-

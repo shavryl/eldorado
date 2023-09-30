@@ -1,6 +1,4 @@
 
-
-
 LINKS = [
     "https://www.kuantokusta.pt/search?q=cafe+maquina+citiz%26milk",
 ]
