@@ -20,20 +20,20 @@ def run():
     driver.get(cities_milk)
 
     print(driver.title)
-    time.sleep(10)
+    time.sleep(5)
     # click accept
     modal = '//*[@id="didomi-notice-agree-button"]'
     accept_xpath = ENTRANCE_MODAL
     click_button(driver, modal)
     
-    time.sleep(150)
-    # driver.quit()
+    time.sleep(200)
+    driver.quit()
 
 
 # driver should click on the button py x-path selector
 def click_button(driver, xpath):
     try:
-        button = WebDriverWait(driver, 10).until(
+        button = WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable((By.XPATH, xpath))
         )
         button.click()
