@@ -9,16 +9,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from src.controller import click_button
-from src.constants import LINKS, ENTRANCE_MODAL
+from src.constants import LINKS, ENTRANCE_MODAL, PRICES
 
 
 class MaquinaSpider(Spider):
     name = "maquina"
     allowed_domains = ["kuantokusta.pt"]
-    start_urls = [
-        f"https://www.kuantokusta.pt/search?q=cafe+maquina&pag={page}"
-          for page in range(1, 5)
-    ]
+    start_urls = LINKS
 
     def __init__(self):
         service = webdriver.ChromeService(executable_path="/usr/bin/chromedriver")
@@ -30,33 +27,36 @@ class MaquinaSpider(Spider):
         click_button(self.driver, accept_xpath)
         
     def parse(self, response):
-        time.sleep(2)
+        target_price = float(PRICES[response.url])
 
         if response.url == LINKS[0]:
             self.driver.get(response.url)
             self.remove_modal()
      
         grid = response.xpath('.//div[@class="product-item"]')
-        num = 1
+        
         for item in grid:
             # here should be a separate controller with xpaths by domain
-
-            print(num)
             big_price = item.xpath('.//span[@class="price-interval"]/text()').get()
             small_price = item.xpath('.//span[@class="small-price-interval"]/text()').get()
             price = small_price or big_price
-            print(f"price: {price}")
             title = item.xpath('.//h2[@itemprop="name"]/text()').get()
-            print(f"title: {title}")
             link = item.xpath('.//div[@class="product-item-inner"]/a/@href').get()
-            print(f"link: {link}")
-            num += 1
+             
+            price: str = price.split(" ")[1] if " " in price else price
+            price = float(price.replace(",", ".").rstrip('€'))
 
-            # and a separate class to standartize the output, maye it's one class
-            yield {
-                "date": "2023-10-06",
-                "title": title,
-                "price": price,
-                "link": link,
-            }
+            profit = round(target_price - price, 1)
+
+            # # we should collect only relevant data, no need to save expensive items
+            if target_price > price and link != "#":
+                # and a separate class to standartize the output, maye it's one class
+                yield {
+                    "date": "2023-10-11",
+                    "profit": profit,
+                    "title": title,
+                    "price": price,
+                    "target_price": target_price,
+                    "link": link,
+                }
         

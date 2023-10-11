@@ -25,7 +25,7 @@ def run():
     modal = '//*[@id="didomi-notice-agree-button"]'
     accept_xpath = ENTRANCE_MODAL
     click_button(driver, modal)
-    
+
     time.sleep(200)
     driver.quit()
 
@@ -43,7 +43,6 @@ def click_button(driver, xpath):
         print("No such element")
     except ElementNotInteractableException:
         print("Element not interactable")
-
 
 
 if __name__ == "__main__":
