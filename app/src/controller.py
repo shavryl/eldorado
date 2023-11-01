@@ -16,15 +16,15 @@ from src.constants import LINKS, ENTRANCE_MODAL
 def run():
     service = webdriver.ChromeService(executable_path="/usr/bin/chromedriver")
     driver = webdriver.Chrome(service=service)
-    cities_milk = LINKS[0]
+    cities_milk = "https://www.olx.pt/ads/q-cafe-maquina-Nespresso-Pixie/"
     driver.get(cities_milk)
 
     print(driver.title)
     time.sleep(5)
     # click accept
-    modal = '//*[@id="didomi-notice-agree-button"]'
-    accept_xpath = ENTRANCE_MODAL
-    click_button(driver, modal)
+    # modal = '//*[@id="didomi-notice-agree-button"]'
+    # accept_xpath = ENTRANCE_MODAL
+    # click_button(driver, modal)
 
     time.sleep(200)
     driver.quit()
