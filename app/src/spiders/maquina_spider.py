@@ -9,11 +9,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from src.controller import click_button
-from src.constants import LINKS, ENTRANCE_MODAL, PRICES
+from src.constants import (
+    LINKS,
+    ENTRANCE_MODAL,
+    PRICES,
+    LINKS_OLX
+)
 
 
-class MaquinaSpider(Spider):
-    name = "maquina"
+
+class MaquinaSpiderKK(Spider):
+    name = "kk"
     allowed_domains = ["kuantokusta.pt"]
     start_urls = LINKS
 
@@ -60,3 +66,52 @@ class MaquinaSpider(Spider):
                     "link": link,
                 }
         
+
+
+class MaquinaSpiderOlx(Spider):
+    name = "olx"
+    allowed_domains = ["olx.pt"]
+    start_urls = ["https://www.olx.pt/ads/q-cafe-maquina-Nespresso-Pixie/"]
+    user_agent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1"
+
+    # def __init__(self):
+    #     service = webdriver.ChromeService(executable_path="/usr/bin/chromedriver")
+    #     self.driver = webdriver.Chrome(service=service)
+
+    def parse(self, response):
+        # grid = response.xpath('.//div[@data-testid="listing-grid"]')
+        # grid = response.xpath('.//*[@id="mainContent"]')
+        # '//div[contains(@class, "css-ld90tha")]//div[contains(@class, "listing-grid-container css-d4ctjd")]'
+        # '/html/body/div[@id="root"]'
+        # [contains(@class, "css")]
+
+
+
+        # html body div#root div#mainContent.css-1ek5um8 div.css-lxw5r3 form div.css-1d90tha
+        # div.css-1d90tha:nth-child(5)
+        # /html/body/div[1]/div[2]/div[2]/form/div[5]
+        # grid = response.xpath('.//div[1]/div[2]/div[2]/form').css('div.css-1d90tha:nth-child(5)')
+        response.selector.remove_namespaces()
+        grid = response.xpath('.//div/*').css("div.css-1d90tha:nth-child(5)")
+        # //*[@id="root"]
+        # //*[@id="mainContent"]
+
+        # "/html/body/div[1]/div[2]/div[2]/form/div[5]/div/div[2]"
+        # # one item
+        # "#\36 49837921"
+        # "div @class='css-lsw7q4x'"
+        # "data-cy='l-card'"
+        
+        # # grid
+        # "div @class='css-oukcj3'"
+        # "div @data-testid='listing-grid'"
+        # "/html/body/div[1]/div[2]/div[2]/form/div[5]/div/div[2]"
+
+        print("grid:")
+        print(grid)
+
+
+        for item in grid:
+            time.sleep(2)
+            print("item: ")
+            print(item)
