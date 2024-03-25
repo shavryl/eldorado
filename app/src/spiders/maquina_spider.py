@@ -71,47 +71,37 @@ class MaquinaSpiderKK(Spider):
 class MaquinaSpiderOlx(Spider):
     name = "olx"
     allowed_domains = ["olx.pt"]
-    start_urls = ["https://www.olx.pt/ads/q-cafe-maquina-Nespresso-Pixie/"]
+    # start_urls = ["https://www.olx.pt/ads/q-cafe-maquina-Nespresso-Pixie/"]
+    start_urls = LINKS_OLX
     user_agent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1"
 
-    # def __init__(self):
-    #     service = webdriver.ChromeService(executable_path="/usr/bin/chromedriver")
-    #     self.driver = webdriver.Chrome(service=service)
+    def __init__(self):
+        service = webdriver.ChromeService(executable_path="/usr/bin/chromedriver")
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-logging")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--log-level=3")
+        self.driver = webdriver.Chrome(options=chrome_options, service=service)
 
     def parse(self, response):
-        # grid = response.xpath('.//div[@data-testid="listing-grid"]')
-        # grid = response.xpath('.//*[@id="mainContent"]')
-        # '//div[contains(@class, "css-ld90tha")]//div[contains(@class, "listing-grid-container css-d4ctjd")]'
-        # '/html/body/div[@id="root"]'
-        # [contains(@class, "css")]
 
+        self.driver.get(response.url)
 
+        grid = self.driver.find_elements(By.CLASS_NAME, "css-rc5s2u")
+        print(f"elements: {len(grid)}")
 
-        # html body div#root div#mainContent.css-1ek5um8 div.css-lxw5r3 form div.css-1d90tha
-        # div.css-1d90tha:nth-child(5)
-        # /html/body/div[1]/div[2]/div[2]/form/div[5]
-        # grid = response.xpath('.//div[1]/div[2]/div[2]/form').css('div.css-1d90tha:nth-child(5)')
-        response.selector.remove_namespaces()
-        grid = response.xpath('.//div/*').css("div.css-1d90tha:nth-child(5)")
-        # //*[@id="root"]
-        # //*[@id="mainContent"]
+        # writing to file with: scrapy crawl olx -o olx.json
+        for element in grid:
+            print(element)
 
-        # "/html/body/div[1]/div[2]/div[2]/form/div[5]/div/div[2]"
-        # # one item
-        # "#\36 49837921"
-        # "div @class='css-lsw7q4x'"
-        # "data-cy='l-card'"
-        
-        # # grid
-        # "div @class='css-oukcj3'"
-        # "div @data-testid='listing-grid'"
-        # "/html/body/div[1]/div[2]/div[2]/form/div[5]/div/div[2]"
+            data = element.find_element(By.CLASS_NAME, "css-1apmciz")
+            price_element = data.find_element(By.TAG_NAME, "p")
+            title_element = data.find_element(By.TAG_NAME, "h6")
 
-        print("grid:")
-        print(grid)
-
-
-        for item in grid:
-            time.sleep(2)
-            print("item: ")
-            print(item)
+            yield {
+                "title": title_element.text.strip(),
+                "price": price_element.text.strip(),
+                "link": element.get_attribute("href")
+            }
